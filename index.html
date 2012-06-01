@@ -1,0 +1,45 @@
+<html>
+<head>
+	<script src="speakGenerator.js"></script>
+	<script src="speakClient.js"></script>
+	
+
+	<script src="http://118.88.21.219:8001/faye/client.js"></script>
+	<script>
+		var client;
+		window.onload = function() {
+			client = new Faye.Client('http://118.88.21.219:8001/faye');
+
+			client.subscribe('/**', function(msg) {
+				speak(msg.text, msg.options);
+				console.log(msg);
+			});
+		};
+
+		function shush(form) {
+			var msg = {
+				text: form.text.value, 
+				options: {
+					amplitude: form.amplitude.value,
+					wordgap: form.workdgap.value, 
+					pitch: form.pitch.value, 
+					speed: form.speed.value 
+				}
+			};
+			client.publish('/shush', msg);
+			return false;
+		};
+	</script>
+</head>
+<body>
+	<form onsubmit="shush(this); return false;">
+		Text: <input type="text" name="text" size=50 value="Never gonna give, you, up.">
+		Amplitude: <input type="text" name="amplitude" size=5 value="100">
+		Pitch: <input type="text" name="pitch" size=5 value="50">
+		Speed: <input type="text" name="speed" size=5 value="175">
+		Word gap: <input type="text" name="workdgap" size=5 value="0">
+		<input type="submit" value="Go!">
+	</form>
+	<div id="audio"></div>
+</body>
+</html>
